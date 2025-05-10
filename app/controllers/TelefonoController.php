@@ -1,162 +1,127 @@
-
 <!DOCTYPE html>
 <?php
 // MEJORAS EN VISUAL CODE
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
-// En SexoController.php
+
+// En TelefonoController.php
 require_once $_SERVER['DOCUMENT_ROOT'] . '/eysphp/config/database.php';
-require_once $_SERVER['DOCUMENT_ROOT'] . '/eysphp/app/models/Sexo.php';
+require_once $_SERVER['DOCUMENT_ROOT'] . '/eysphp/app/models/Telefono.php';
 
-
-
-class SexoController {
-    private $sexo;
+class TelefonoController {
+    private $telefono;
     private $db;
 
     public function __construct() {
         $this->db = (new Database())->getConnection();
-        $this->sexo = new Sexo($this->db);
+        $this->telefono = new Telefono($this->db);
     }
 
-    // Mostrar todos los sexos
+    // Mostrar todos los teléfonos
     public function index() {
-        $sexos = $this->sexo->read();
-        require_once '../app/views/sexo/index.php';
+        $telefonos = $this->telefono->read();
+        require_once '../app/views/telefono/index.php';
     }
 
-
-
-public function create() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        echo "Formulario recibido";  // Verificar si llega el formulario
-        if (isset($_POST['nombre'])) {
-            $this->sexo->nombre = $_POST['nombre'];
-            if ($this->sexo->create()) {
-                echo "Sexo creado exitosamente";
-                // Redirigir o mostrar un mensaje de éxito
+    public function create() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            echo "Formulario recibido";
+            if (isset($_POST['numero'])) {
+                $this->telefono->numero = $_POST['numero'];
+                if ($this->telefono->create()) {
+                    echo "Teléfono creado exitosamente";
+                } else {
+                    echo "Error al crear el teléfono";
+                }
             } else {
-                echo "Error al crear el sexo";
+                echo "Faltan datos";
             }
         } else {
-            echo "Faltan datos";
+            echo "Método incorrecto";
         }
-    } else {
-        echo "Método incorrecto";  // Verificar que el formulario no se envíe con GET
+        die();
     }
-    die();  // Detener la ejecución para ver los mensajes
-}
 
+    public function edit($id) {
+        $this->telefono->id = $id;
+        $telefono = $this->telefono->readOne();
 
-public function edit($id) {
-
-// Pasar el ID al modelo antes de llamar a readOne()
-        $this->sexo->id = $id;
-        $sexo = $this->sexo->readOne();
-
-        if (!$sexo) {
+        if (!$telefono) {
             die("Error: No se encontró el registro.");
         }
 
-    require_once '../app/views/sexo/edit.php';
-}
+        require_once '../app/views/telefono/edit.php';
+    }
 
+    public function eliminar($id) {
+        $this->telefono->id = $id;
+        $telefono = $this->telefono->readOne();
 
-
-public function eliminar($id) {
-
-// Pasar el ID al modelo antes de llamar a readOne()
-        $this->sexo->id = $id;
-        $sexo = $this->sexo->readOne();
-
-        if (!$sexo) {
+        if (!$telefono) {
             die("Error: No se encontró el registro.");
         }
 
-    require_once '../app/views/sexo/delete.php';
-}
+        require_once '../app/views/telefono/delete.php';
+    }
 
-
-
-
-
-
-
-public function update() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        echo "Formulario recibido";  // Verificar si llega el formulario
-        if (isset($_POST['nombre'])) {
-            $this->sexo->nombre = $_POST['nombre'];
-            $this->sexo->id = $_POST['id'];
-            if ($this->sexo->update()) {
-                echo "Sexo actualizado exitosamente";
-                // Redirigir o mostrar un mensaje de éxito
+    public function update() {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            echo "Formulario recibido";
+            if (isset($_POST['numero'])) {
+                $this->telefono->numero = $_POST['numero'];
+                $this->telefono->id = $_POST['id'];
+                if ($this->telefono->update()) {
+                    echo "Teléfono actualizado exitosamente";
+                } else {
+                    echo "Error al actualizar el teléfono";
+                }
             } else {
-                echo "Error al crear el sexo";
+                echo "Faltan datos";
             }
         } else {
-            echo "Faltan datos";
+            echo "Método incorrecto";
         }
-    } else {
-        echo "Método incorrecto";  // Verificar que el formulario no se envíe con GET
+        die();
     }
-    die();  // Detener la ejecución para ver los mensajes
-}
 
-
-
-
-
-
-
-
-    // Eliminar un sexo
     public function delete() {
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        if (isset($_POST['id'])) {
-            $this->sexo->id = $_POST['id'];
-        if ($this->sexo->delete()) {
-                echo "Sexo borrado exitosamente";
-		die();
-            header('Location: index.php?msg=deleted');
-            exit;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            if (isset($_POST['id'])) {
+                $this->telefono->id = $_POST['id'];
+                if ($this->telefono->delete()) {
+                    echo "Teléfono borrado exitosamente";
+                    die();
+                    header('Location: index.php?msg=deleted');
+                    exit;
+                } else {
+                    header('Location: index.php?msg=error');
+                    exit;
+                }
+            } else {
+                echo "Faltan datos";
+            }
         } else {
-            header('Location: index.php?msg=error');
-            exit;
+            echo "Método incorrecto";
         }
-} else {
-            echo "Faltan datos";
-        }
-    } else {
-        echo "Método incorrecto";  // Verificar que el formulario no se envíe con GET
+        die();
     }
-    die();  // Detener la ejecución para ver los mensajes
-
-}
 }
 
-/// Manejo de la acción en la URL
+// Manejo de la acción en la URL
 if (isset($_GET['action'])) {
-    $controller = new SexoController();
+    $controller = new TelefonoController();
 
-	   echo "hola";
+    echo "hola";
     switch ($_GET['action']) {
         case 'create':
             $controller->create();
             break;
-         case 'update':
-
+        case 'update':
             $controller->update();
             break;
-         case 'delete':
-
+        case 'delete':
             $controller->delete();
             break;
-
-
-
-
-
         default:
             echo "Acción no válida.";
             break;
@@ -164,7 +129,4 @@ if (isset($_GET['action'])) {
 } else {
     echo "No se especificó ninguna acción.";
 }
-
-
-
 ?>
